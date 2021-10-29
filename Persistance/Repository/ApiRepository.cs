@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace Persistance
 {
-    public class Repo : IRepo
+    public class ApiRepository : IApiRepository
     {
         private readonly ApiContext context;
 
-        public Repo(ApiContext context)
+        public ApiRepository(ApiContext context)
         {
             this.context = context;
         }

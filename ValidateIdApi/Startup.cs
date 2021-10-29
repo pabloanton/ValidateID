@@ -1,19 +1,17 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Persistance;
 using Persistance.Context;
 using Serilog;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Service.Interface;
+using Service.Services;
 
 namespace ValidateIdApi
 {
@@ -32,7 +30,8 @@ namespace ValidateIdApi
             services.AddSingleton(Log.Logger);
             services.AddControllers();
             services.AddDbContext<ApiContext>(opt => opt.UseInMemoryDatabase("ValidateID") , ServiceLifetime.Transient);
-            services.AddTransient(typeof(IRepo), typeof(Repo));
+            services.AddTransient(typeof(IApiRepository), typeof(ApiRepository));
+            services.AddTransient(typeof(IApiService), typeof(ApiService));
             AddSwagger(services);
             services.AddMvc();
             services.AddControllers().AddNewtonsoftJson(options =>  options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);

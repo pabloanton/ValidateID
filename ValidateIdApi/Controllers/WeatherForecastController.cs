@@ -14,8 +14,8 @@ namespace ValidateIdApi.Controllers
     [Route("api/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private readonly IRepo _repo;
-        public WeatherForecastController(IRepo repo , ILogger<WeatherForecastController> logger)
+        private readonly IApiRepository _repo;
+        public WeatherForecastController(IApiRepository repo , ILogger<WeatherForecastController> logger)
         {
             this._repo = repo;
             _logger = logger;

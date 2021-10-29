@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Persistance;
 using Serilog;
+using Service.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +17,12 @@ namespace ValidateIdApi.Controllers
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly IRepo _repo;
+        private readonly IApiService _service;
         private readonly ILogger _logger;
 
-        public ProductsController(IRepo repo, ILogger logger)
+        public ProductsController(IApiService service, ILogger logger)
         {
-            this._repo = repo;
+            this._service = service;
             _logger = logger;
 
         }
@@ -32,28 +33,29 @@ namespace ValidateIdApi.Controllers
             try
             {
                 Basket userBasket;
-                var checkuser = await this._repo.GetUser(request.userId);
-                if (checkuser == null)
+                var checkuser = await this._service.GetUser(request.userId);
+                if (checkuser == null)//Check if the user exits
                 {
                     return BadRequest(new { success = false, message ="El usuario con Id "+ request.userId + " no existe" });
                 }
                 else
                 {
-                    userBasket = await this._repo.GetUserBasket(checkuser);
+                    userBasket = await this._service.GetUserBasket(checkuser);
+                    //Create Basket for the user
                     if (userBasket == null)
                     {
-                        userBasket = await this._repo.CreateBasket(checkuser);
+                        userBasket = await this._service.CreateBasket(checkuser);
                         this._logger.Information(string.Format("[BASKET CREATED]: Created[{0}], UserID:{1}", DateTime.Now.Date,checkuser.id));
                     }
 
-                    var allProducts = await this._repo.GetAllProducts();
+                    var allProducts = await this._service.GetAllProducts();
 
-                    var ids = request.products.Select(c => c.id).ToArray();
+                    var productsRequest = request.products.Select(c => c.id).ToArray();
                     var getAllProdcutos = allProducts.Select(y=>y.Id).ToArray();
 
-                    bool isSubset = !ids.Except(getAllProdcutos).Any();
+                    bool isSubset = !productsRequest.Except(getAllProdcutos).Any();
 
-                    if (!isSubset)
+                    if (!isSubset)//Check if a least one product doesnt exists
                     {
                         return BadRequest(new { success = false, message = "Alguno de los productos que esta tratando de agregar a la cesta no existe" });
                     }
@@ -65,7 +67,7 @@ namespace ValidateIdApi.Controllers
                         {
                             var currentProduct = allProducts.FirstOrDefault(x => x.Id == item.id);
                             data.Add(new ProductQuanty { product = currentProduct, quanty = item.quanty });
-                            this._logger.Information(string.Format("[ITEM ADDED TO SHOPPING CART]: Added[{0}],USerID: {1}, ProductID: {2},Quanty: {3},Price[<{4}>]", DateTime.Now.Date.ToString("yyyy-MM-dd"), checkuser.id, item.id, item.quanty, (double)currentProduct.Price));
+                            this._logger.Information(string.Format("[ITEM ADDED TO SHOPPING CART]: Added[{0}],USerID: {1}, ProductID: {2},Quanty: {3},Price[<€{4}>]", DateTime.Now.Date.ToString("yyyy-MM-dd"), checkuser.id, item.id, item.quanty, (double)currentProduct.Price));
                         }
 
                         if (userBasket.products!= null && userBasket.products.Count > 0)
@@ -74,7 +76,7 @@ namespace ValidateIdApi.Controllers
                         }
 
                         userBasket.products = data;
-                        await this._repo.SaveChangesAsync();
+                        await this._service.SaveChangesAsync();
                     }
 
                     return Ok(new { success = true, message ="Productos agregados" });
@@ -94,12 +96,12 @@ namespace ValidateIdApi.Controllers
         {
             try
             {
-                var user = await this._repo.GetUser(userId);
+                var user = await this._service.GetUser(userId);
                 if(user == null)
                 {
                     return BadRequest(new { success = false, message = "El usuario con id "+userId +" no existe" });
                 }
-                var basket = await this._repo.GetUserBasket(user);
+                var basket = await this._service.GetUserBasket(user);
                 List<string> products = new List<string>();
 
                 foreach(var item in basket.products)

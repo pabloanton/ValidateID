@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Persistance
 {
-    public interface IRepo
+    public interface IApiRepository
     {
         Task<IEnumerable<User>> GetAllUsers();
         Task<IEnumerable<Product>> GetAllProducts();
