@@ -3,6 +3,7 @@
 
 ### The application uses net core 3.1 with EF (in memory database).
 ### Designed under a simple microservices architecture
+### Use Serilog
 ### It has two methods: /api/Products/add POST and /api/Products/basket GET
 
 ## Initialization
