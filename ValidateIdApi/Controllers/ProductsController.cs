@@ -85,6 +85,7 @@ namespace ValidateIdApi.Controllers
             }
             catch(Exception e)
             {
+                this._logger.Error(e, e.Message);
                 return BadRequest(new { success=false , error = e.Message }) ;
             }
            
@@ -123,6 +124,7 @@ namespace ValidateIdApi.Controllers
             }
             catch (Exception e)
             {
+                this._logger.Error(e, e.Message);
                 return BadRequest(new { success = false, error = e.Message });
             }
 

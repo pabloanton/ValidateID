@@ -65,10 +65,10 @@ namespace Persistance.Context
                 this.Products.AddRange(products);
                 this.SaveChanges();
             }
-            User user = null;
+
             if (!Task.Run(() => this.Users.AnyAsync()).Result)
             {
-                user = new User { firstName = "Root", lastName = "ValidateID" };
+                User user = new User { firstName = "Root", lastName = "ValidateID" };
                 this.Users.Add(user);
                 this.SaveChanges();
             }

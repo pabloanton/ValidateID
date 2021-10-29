@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Persistance.Context;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,60 +13,115 @@ namespace Persistance
     public class ApiRepository : IApiRepository
     {
         private readonly ApiContext context;
+        private readonly ILogger _logger;
 
-        public ApiRepository(ApiContext context)
+        public ApiRepository(ILogger logger , ApiContext context)
         {
             this.context = context;
+            this._logger = logger;
         }
 
-            public async Task<IEnumerable<User>> GetAllUsers()
+        public async Task<IEnumerable<User>> GetAllUsers()
         {
-            return await Task.Run(() => this.context.Users.ToList());
+            try
+            {
+                return await Task.Run(() => this.context.Users.ToList());
+            }
+            catch (Exception e)
+            {
+                this._logger.Error(e, e.Message);
+                throw e;
+            }
         }
 
         public async Task<IEnumerable<Product>> GetAllProducts()
         {
-            return await Task.Run(() => this.context.Products.ToList());
+
+            try
+            {
+                return await Task.Run(() => this.context.Products.ToList());
+            }
+            catch (Exception e)
+            {
+                this._logger.Error(e, e.Message);
+                throw e;
+            }
         }
 
         public async Task<User> GetUser(int id)
         {
-            var result = await this.context.Users.FindAsync(id);
 
-            return result;
+            try
+            {
+                var result = await this.context.Users.FindAsync(id);
+                return result;
 
+            }
+            catch (Exception e)
+            {
+                this._logger.Error(e, e.Message);
+                throw e;
+            }
         }
 
         public async Task<Basket> GetUserBasket(User user)
         {
-            var result = await Task.Run(() => this.context.Baskets.Include(p=>p.products).ThenInclude(i=>i.product).Where(x=>x.user.id == user.id).FirstOrDefault());
-            return result;
+            try
+            {
+                var result = await Task.Run(() => this.context.Baskets.Include(p => p.products).ThenInclude(i => i.product).Where(x => x.user.id == user.id).FirstOrDefault());
+                return result; 
+            }
+            catch (Exception e)
+            {
+                this._logger.Error(e, e.Message);
+                throw e;
+            }
+           
         }
 
 
         public async Task<Basket> CreateBasket(User user)
         {
-            Basket basket = new Basket { creationDate = DateTime.Now ,user = user  , products = new List<ProductQuanty>() };
-            await this.context.Baskets.AddAsync(basket);
-            await this.context.SaveChangesAsync();
-            return basket;
+
+            try
+            {
+                Basket basket = new Basket { creationDate = DateTime.Now, user = user, products = new List<ProductQuanty>() };
+                await this.context.Baskets.AddAsync(basket);
+                await this.context.SaveChangesAsync();
+                return basket;
+            }
+            catch (Exception e)
+            {
+                this._logger.Error(e, e.Message);
+                throw e;
+            }
 
         }
 
         public async Task SaveChangesAsync()
         {
-           var a =  await Task.Run(() =>this.context.SaveChanges());
+            try
+            {
+                await Task.Run(() => this.context.SaveChanges());
+            }
+            catch (Exception e)
+            {
+                this._logger.Error(e, e.Message);
+                throw e;
+            }
         }
 
         public async Task<IEnumerable<Basket>> GetAllBasket()
         {
-            return  await Task.Run(() => this.context.Baskets.ToList());
-        }
-
-        public async Task<List<User>> GetAllPost()
-        {
-            var users = await this.context.Users.Include(u => u.Posts).ToListAsync();
-            return users;
+            try
+            {
+                return await Task.Run(() => this.context.Baskets.ToList());
+            }
+            catch (Exception e)
+            {
+                this._logger.Error(e, e.Message);
+                throw e;
+            }
         }
     }
 }

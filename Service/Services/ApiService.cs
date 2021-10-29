@@ -22,39 +22,86 @@ namespace Service.Services
 
         public async Task<IEnumerable<User>> GetAllUsers()
         {
-           return await this._repo.GetAllUsers();
+            try
+            {
+                return await this._repo.GetAllUsers();
+
+            }
+            catch(Exception e)
+            {
+                throw e;
+            }
         }
 
         public async Task<IEnumerable<Product>> GetAllProducts()
         {
-            return await this._repo.GetAllProducts();
+            try
+            {
+                return await this._repo.GetAllProducts();
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         public async Task<User> GetUser(int id)
         {
-            var result = await this._repo.GetUser(id);
 
-            return result;
+            try
+            {
+                var result = await this._repo.GetUser(id);
+
+                return result;
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            
 
         }
 
         public async Task<Basket> GetUserBasket(User user)
         {
-            var result = await this._repo.GetUserBasket(user);
-            return result;
+            try
+            {
+                var result = await this._repo.GetUserBasket(user);
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
         }
 
 
         public async Task<Basket> CreateBasket(User user)
         {
-            var result = await this._repo.CreateBasket(user);
-            return result;
-
+            try
+            {
+                var result = await this._repo.CreateBasket(user);
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         public async Task SaveChangesAsync()
         {
-            await this._repo.SaveChangesAsync();
+            try
+            {
+                await this._repo.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         public async Task<IEnumerable<Basket>> GetAllBasket()

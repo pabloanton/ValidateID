@@ -10,7 +10,6 @@ namespace Persistance
     {
         Task<IEnumerable<User>> GetAllUsers();
         Task<IEnumerable<Product>> GetAllProducts();
-        Task<List<User>> GetAllPost();
         Task<IEnumerable<Basket>> GetAllBasket();
 
         Task<User> GetUser(int id);
